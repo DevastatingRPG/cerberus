@@ -30,63 +30,6 @@ async def on_ready():
     await bot.change_presence(status=discord.Status.dnd, activity=discord.Activity(type=discord.ActivityType.listening, name='.help'))
     print(f'{bot.user.name} has connected to Discord!')
 
-# Function to apply Nickname Change
-@bot.command(name='nick')
-async def nick(ctx, nickname):
-    author = ctx.author
-    guild = ctx.guild
-    mods = [member for member in guild.members if guild.get_role(server_info[guild.id]['co_mod']) in member.roles]
-    mod = random.randrange(len(mods))
-    dm_channel_mod = await mods[mod].create_dm()
-    await ctx.message.delete()
-    await ctx.send('Nickname change request submitted!')
-    request_msg = await dm_channel_mod.send(f'{author} from \'{guild}\' wants to change their nickname to {nickname}. '
-                                            f'React with ✅ to accept and ❌ to reject')
-    await request_msg.add_reaction('✅')
-    await request_msg.add_reaction('❌')
-
-    @bot.event
-    async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
-
-        dm_channel_author = await author.create_dm()
-
-        if str(payload.emoji) == '✅' and not guild.get_member(payload.user_id).bot:
-            await author.edit(nick=nickname)
-            await request_msg.delete()
-            await dm_channel_mod.send('Nickname Change request accepted.')
-            await dm_channel_author.send(f'Your nickname change in \'{guild}\' has been accepted.')
-        if str(payload.emoji) == '❌' and not guild.get_member(payload.user_id).bot:
-            await request_msg.delete()
-            await dm_channel_mod.send('Nickname Change request denied.')
-            await dm_channel_author.send(f'Your nickname change in \'{guild}\' has been rejected.')
-
-
-# Function to Create Role
-@bot.command(name='cr' or 'createrole')
-@commands.has_permissions(manage_roles=True)
-async def create_role(ctx, role):
-    guild = ctx.guild
-    channel = ctx.channel
-    perms = discord.Permissions(add_reactions=True, stream=True, read_messages=True, view_channel=True,
-                                send_messages=True, attach_files=True, read_message_history=True, external_emojis=True,
-                                connect=True, speak=True, use_voice_activation=True)
-    await guild.create_role(name=role, permissions=perms)
-    await channel.send(f'Role {role} has been successfully created! Poggers!!')
-
-
-# Function to Delete Role
-@bot.command(name='dr' or 'deleterole')
-@commands.has_permissions(manage_roles=True)
-async def delete_role(ctx, role: discord.Role):
-    author = ctx.author
-    channel = ctx.channel
-    top_role = author.top_role
-    if top_role.position > role.position:
-        await role.delete()
-        await channel.send(f'Role {role} has been successfully deleted! Poggers!!')
-    else:
-        await channel.send('Oof, your top role is not high enough to run this mate.')
-
 
 # Function to Create Poll
 @bot.command(name='poll')

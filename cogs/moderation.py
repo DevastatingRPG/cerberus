@@ -1,4 +1,4 @@
-import discord, asyncio, json
+import asyncio, json, discord
 from discord.ext import commands
 
 with open('info.json') as info_file:
@@ -9,8 +9,6 @@ def check_if_mod(ctx):
     mod = discord.utils.get(ctx.guild.roles, id=server_info[str(ctx.guild.id)]['mod'])
     return mod in ctx.author.roles
 
-
-
 class Moderation(commands.Cog):
 
     def __init__(self, bot):
@@ -19,7 +17,7 @@ class Moderation(commands.Cog):
     # Function to initialize the bot
     @commands.command(name='init')
     @commands.is_owner()
-    async def init(self, ctx, owner: discord.Role, mod: discord.Role, co_mod: discord.Role):
+    async def init(self, ctx, owner: discord.Role, mod: discord.Role, co_mod: discord.Role, nick: discord.TextChannel):
 
         guild = ctx.guild
         muted = discord.utils.get(guild.roles, name='Muted')
@@ -30,7 +28,7 @@ class Moderation(commands.Cog):
 
         roles = {member.name: [role.id for role in member.roles] for member in guild.members}
 
-        server_info[str(guild.id)] = {'owner': owner.id, 'mod': mod.id, 'co_mod': co_mod.id, 'roles': roles, 'reaction_roles': {}}
+        server_info[str(guild.id)] = {'owner': owner.id, 'mod': mod.id, 'co_mod': co_mod.id, 'roles': roles, 'reaction_roles': {}, 'nick': nick.id}
 
         with open('info.json', 'w') as info_file_input:
             json.dump(server_info, info_file_input, indent=2)
@@ -268,6 +266,60 @@ class Moderation(commands.Cog):
             if str(payload.emoji) == '✅' and not guild.get_member(payload.user_id).bot:
                 required_role = server_info[str(guild.id)]['reaction_roles'][str(payload.message_id)]
                 await member.remove_roles(discord.utils.get(guild.roles, name = required_role))
+
+    # Function to apply Nickname Change
+    @commands.command(name='nick')
+    async def nick(self, ctx, *, nickname):
+
+        channel = ctx.guild.get_channel(server_info[str(ctx.guild.id)]['nick'])
+        await ctx.message.delete()
+        await ctx.send('Nickname change request submitted!')
+        request_msg = await channel.send(f'{ctx.author} wants to change their nickname to {nickname}. React with ✅ to accept and ❌ to reject')
+        await request_msg.add_reaction('✅')
+        await request_msg.add_reaction('❌')
+
+        def reaction_update(reaction, user):
+            return not user.bot
+
+        try:
+
+            reaction, user = await self.bot.wait_for('reaction_add', timeout=86400, check=reaction_update)
+
+            if str(reaction.emoji) == '✅':
+                await ctx.author.edit(nick=nickname)
+                await request_msg.delete()
+                await channel.send('Nickname Change request accepted')
+                await ctx.send(f'Hey {ctx.author.mention}, Your nickname change request has been accepted')
+
+            if str(reaction.emoji) == '❌':
+                await request_msg.delete()
+                await channel.send('Nickname Change request rejected')
+                await ctx.send(f'Hey {ctx.author.mention}, Your nickname change request has been rejected')
+
+        except asyncio.TimeoutError:
+            ctx.send(f'Hey {ctx.author.mention}, it seems your nickname change request has been ignored')
+
+    # Function to Create Role
+    @commands.command(name='cr' or 'createrole')
+    @commands.has_permissions(manage_roles=True)
+    async def create_role(self, ctx, role):
+
+        perms = discord.Permissions(add_reactions=True, stream=True, read_messages=True, view_channel=True, send_messages=True, attach_files=True, 
+        read_message_history=True, external_emojis=True, connect=True, speak=True, use_voice_activation=True)
+        await ctx.guild.create_role(name=role, permissions=perms)
+        await ctx.send(f'Role {role} has been successfully created! Poggers!!')
+
+    # Function to Delete Role
+    @commands.command(name='dr' or 'deleterole')
+    @commands.has_permissions(manage_roles=True)
+    async def delete_role(self, ctx, role: discord.Role):
+
+        top_role = ctx.author.top_role
+        if top_role.position > role.position:
+            await role.delete()
+            await ctx.send(f'Role {role} has been successfully deleted! Poggers!!')
+        else:
+            await ctx.send('Oof, your top role is not high enough to run this mate.')
 
     # Local Error Handling
 
