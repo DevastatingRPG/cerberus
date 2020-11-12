@@ -323,10 +323,15 @@ class Moderation(commands.Cog):
 
     # Local Error Handling
 
-    # @init.error
-    # async def init_handler(self, ctx, error):
-    #     if isinstance(error, commands.MissingRequiredArgument):
-    #         await ctx.send('You need to enter the names of the roles for Owner, Mod and Co-Mod')
+    @init.error
+    async def init_handler(self, ctx, error):
+        if isinstance(error, commands.MissingRequiredArgument):
+            await ctx.send('You need to enter the names of the roles for Owner, Mod and Co-Mod')
+
+    @delete_role.error
+    async def dr_handler(self, ctx, error):
+        if isinstance(error, commands.CommandInvokeError):
+            await ctx.send('You cannot delete a role which doesn\t exist, Dum Dum')
 
 def setup(bot):
     bot.add_cog(Moderation(bot))
