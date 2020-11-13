@@ -42,7 +42,7 @@ class Fun(commands.Cog):
             similar = '\n'.join([mov.title for mov in movies.similar(movie_id)[0:5]])
             poster = f'https://image.tmdb.org/t/p/w185/{res_movie.poster_path}'
             
-            cast = '\n'.join([cast['name'] for cast in movies.credits(movie_id).cast][0:5])
+            cast = '\n'.join([f"{cast['character']} - {cast['name']}" for cast in movies.credits(movie_id).cast][0:5])
             directors = '\n'.join([director['name'] for director in movies.credits(movie_id).crew if director['job']=='Director'])
 
             movie_embed = discord.Embed(title='***The Movie Database Search Result***', colour=0xde4035)
