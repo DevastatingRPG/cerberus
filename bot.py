@@ -1,5 +1,5 @@
 # bot.py
-import discord, random, asyncio, youtube_dl, os, json
+import discord, os, json
 from discord.ext import commands
 from tmdbv3api import TMDb
 from tmdbv3api import Movie
@@ -16,10 +16,6 @@ bot.remove_command('help')
 for filename in os.listdir('cogs'):
     if filename.endswith('.py'):
         bot.load_extension(f'cogs.{filename[:-3]}')
-
-tmdb = TMDb()
-tmdb.api_key = '153134b761348d470176d17a179d0323'
-tmdb.language = 'en'
 
 with open('info.json') as info_file:
     server_info = json.load(info_file)
