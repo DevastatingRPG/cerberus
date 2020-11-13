@@ -1,4 +1,4 @@
-import asyncio, json, discord
+import asyncio, json, discord, requests, shutil
 from tmdbv3api import TMDb
 from tmdbv3api import Movie
 from discord.ext import commands
@@ -33,7 +33,7 @@ class Fun(commands.Cog):
             def bot_check(reaction, user):
                 return not user.bot and reaction.message in msg and str(reaction.emoji) == '👍'
 
-            reaction, user = await self.bot.wait_for('reaction_add', timeout=120, check=bot_check)
+            reaction, user = await self.bot.wait_for('reaction_add', timeout=120, check=bot_check)  # pylint: disable=unused-variable
       
             res_movie = search[msg.index(reaction.message)]
             movie_id = res_movie.id
@@ -42,8 +42,8 @@ class Fun(commands.Cog):
             similar = '\n'.join([mov.title for mov in movies.similar(movie_id)[0:5]])
             poster = f'https://image.tmdb.org/t/p/w185/{res_movie.poster_path}'
             
-            cast = '\n'.join([f"{cast['character']} - {cast['name']}" for cast in movies.credits(movie_id).cast][0:5])
-            directors = '\n'.join([director['name'] for director in movies.credits(movie_id).crew if director['job']=='Director'])
+            cast = '\n'.join([f"{cast['character']} - {cast['name']}" for cast in movies.credits(movie_id).cast][0:5])  # pylint: disable=no-member
+            directors = '\n'.join([director['name'] for director in movies.credits(movie_id).crew if director['job']=='Director'])  # pylint: disable=no-member
 
             movie_embed = discord.Embed(title='***The Movie Database Search Result***', colour=0xde4035)
             if not poster.endswith('w185/'):
@@ -88,7 +88,7 @@ class Fun(commands.Cog):
             def bot_check(reaction, user):
                 return not user.bot and reaction.message is request_msg and (str(reaction.emoji) == '✅' or str(reaction.emoji) == '❌')
 
-            reaction, user = await self.bot.wait_for('reaction_add', timeout=86400, check=bot_check)
+            reaction, user = await self.bot.wait_for('reaction_add', timeout=86400, check=bot_check)  # pylint: disable=unused-variable
             
             if str(reaction.emoji) == '✅':
                 await ctx.author.edit(nick=nickname)
@@ -103,6 +103,34 @@ class Fun(commands.Cog):
 
         except asyncio.TimeoutError:
             ctx.send(f'Hey {ctx.author.mention}, it seems your nickname change request has been ignored')
+
+    # Function to create emoji from image link
+    @commands.command(name='emoji')
+    @commands.has_permissions(manage_emojis=True)
+    async def emoji(self, ctx, image: str, *, name: str):
+        name = name.replace(' ', '')
+        extension = image.split('.')[-1]
+        r = requests.get(image, stream=True)        
+
+        if r.status_code == 200:
+            
+            r.raw.decode_content = True
+            
+            with open(f'emojis/emoji.{extension}','wb') as image:
+                shutil.copyfileobj(r.raw, image)
+            
+            with open(f'emojis/emoji.{extension}', 'rb') as emoji:
+                emoji = emoji.read()
+                await ctx.guild.create_custom_emoji(name=name, image=emoji)
+                
+            ctx.send(f'Emoji succesfully created :{name}:')
+        else:
+            ctx.send('There was an error retrieving your image')
+
+    @emoji.error
+    async def emoji_error(self, ctx, error):
+        if isinstance(error, commands.CommandInvokeError):
+            await ctx.send('It seems the emoji limit in the guild has been reached')
 
 def setup(bot):
     bot.add_cog(Fun(bot))

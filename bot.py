@@ -107,7 +107,10 @@ async def helpfunc(ctx, category=None):
                         'Syntax : `.poll [Question in quotes] [Options in quotes separated by spaces]`',
                         
             'movie':    'Show information about a Movie\n'
-                        'Syntax : `.movie [Movie name]`'}
+                        'Syntax : `.movie [Movie name]`',
+                        
+            'emoji':    'Create emoji from image url\n'
+                        'Syntax : `.emoji [url ending with extension] [Emoji name]`'}
 
     help_embed = {'⚙️ **Moderation**': '`.help moderation`', '\u200b': '\u200b', '😁 **Fun**': '`.help fun`'}
     reference = {'⚙️': [moderation, 'Moderation', ['⬅️'], False], '😁': [fun, 'Fun', ['⬅️'], False], '⬅️': [help_embed, 'Home Page', ['⚙️', '😁'], True]}
@@ -139,7 +142,7 @@ async def helpfunc(ctx, category=None):
             def bot_check(reaction, user):
                 return reaction.message.id == sent_embed.id and not user.bot
 
-            reaction, user = await bot.wait_for('reaction_add', check=bot_check)           
+            reaction, user = await bot.wait_for('reaction_add', check=bot_check)   # pylint: disable=unused-variable        
             await sent_embed.clear_reactions()
             await sent_embed.edit(embed=make_embed(reference[str(reaction.emoji)]))
             for reactions in reference[str(reaction.emoji)][2]:
