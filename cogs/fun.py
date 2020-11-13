@@ -38,13 +38,24 @@ class Fun(commands.Cog):
             res_movie = search[msg.index(reaction.message)]
             movie_id = res_movie.id
             trailer = discord.utils.get(movies.videos(movie_id), type='Trailer')
-            reviews = [review for review in movies.reviews(movie_id) if len(review.content) < 1024]
+            reviews = [review for review in movies.reviews(movie_id) if len(review.content) < 1024][0:3]
             similar = '\n'.join([mov.title for mov in movies.similar(movie_id)[0:5]])
+            poster = f'https://image.tmdb.org/t/p/w185/{res_movie.poster_path}'
+            
+            cast = '\n'.join([cast['name'] for cast in movies.credits(movie_id).cast][0:5])
+            directors = '\n'.join([director['name'] for director in movies.credits(movie_id).crew if director['job']=='Director'])
+
             movie_embed = discord.Embed(title='***The Movie Database Search Result***', colour=0xde4035)
+            if not poster.endswith('w185/'):
+                movie_embed.set_image(url=poster)
+            movie_embed.set_author(name='Cerberus', icon_url=str(self.bot.user.avatar_url))
             movie_embed.add_field(name='**Title :**', value=res_movie.title)
             movie_embed.add_field(name='\u200b', value='\u200b')
             movie_embed.add_field(name='**Release Date :**', value=res_movie.release_date)
             movie_embed.add_field(name='**Overview :**', value=res_movie.overview, inline=False)
+            movie_embed.add_field(name='**Cast :**', value=cast)
+            movie_embed.add_field(name='\u200b', value='\u200b')
+            movie_embed.add_field(name='**Directors :**', value=directors)
             if len(reviews) != 0:
                 movie_embed.add_field(name='**Reviews :**', value='\u200b')
                 for review in reviews:                    

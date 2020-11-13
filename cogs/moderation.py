@@ -290,6 +290,11 @@ class Moderation(commands.Cog):
         else:
             await ctx.send('Oof, your top role is not high enough to run this mate.')
 
+    # Function to create emoji from image link
+    # @commands.command(name='emojify')
+    # @commands.has_permissions
+
+
     # Local Error Handling
 
     @init.error
