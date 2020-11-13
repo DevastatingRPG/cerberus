@@ -51,7 +51,7 @@ class Moderation(commands.Cog):
     # Function to change Owner role
     @commands.command(name='owner')
     @commands.is_owner()
-    async def owner_change(self, ctx, owner: discord.Role):
+    async def owner_change(self, ctx, *, owner: discord.Role):
 
         server_info[str(ctx.guild.id)]['owner'] = owner.id
 
@@ -63,7 +63,7 @@ class Moderation(commands.Cog):
     # Function to change Moderator role
     @commands.command(name='mod')
     @commands.is_owner()
-    async def mod_change(self, ctx, mod: discord.Role):
+    async def mod_change(self, ctx, *, mod: discord.Role):
 
         server_info[str(ctx.guild.id)]['mod'] = mod.id
 
@@ -75,7 +75,7 @@ class Moderation(commands.Cog):
     # Function to change Co Moderator role
     @commands.command(name='comod')
     @commands.is_owner()
-    async def comod_change(self, ctx, co_mod: discord.Role):
+    async def comod_change(self, ctx, *, co_mod: discord.Role):
 
         server_info[str(ctx.guild.id)]['co_mod'] = co_mod.id
 
@@ -222,7 +222,7 @@ class Moderation(commands.Cog):
     # Function for Reaction Roles
     @commands.command(name='react')
     @commands.has_permissions(manage_roles=True)
-    async def react(self, ctx, role):
+    async def react(self, ctx, *, role):
 
         author = ctx.author
         top_role = author.top_role
@@ -300,9 +300,9 @@ class Moderation(commands.Cog):
             ctx.send(f'Hey {ctx.author.mention}, it seems your nickname change request has been ignored')
 
     # Function to Create Role
-    @commands.command(name='cr' or 'createrole')
+    @commands.command(aliases=['cr', 'createrole'])
     @commands.has_permissions(manage_roles=True)
-    async def create_role(self, ctx, role):
+    async def create_role(self, ctx, *, role):
 
         perms = discord.Permissions(add_reactions=True, stream=True, read_messages=True, view_channel=True, send_messages=True, attach_files=True, 
         read_message_history=True, external_emojis=True, connect=True, speak=True, use_voice_activation=True)
@@ -310,9 +310,9 @@ class Moderation(commands.Cog):
         await ctx.send(f'Role {role} has been successfully created! Poggers!!')
 
     # Function to Delete Role
-    @commands.command(name='dr' or 'deleterole')
+    @commands.command(aliases=['deleterole', 'dr'])
     @commands.has_permissions(manage_roles=True)
-    async def delete_role(self, ctx, role: discord.Role):
+    async def delete_role(self, ctx, *, role: discord.Role):
 
         top_role = ctx.author.top_role
         if top_role.position > role.position:

@@ -108,62 +108,94 @@ async def movie(ctx, *, title):
 
 # Custom Help
 @bot.command(name='help')
-async def helpfunc(ctx, function='All'):
-    channel = ctx.channel
-    author = ctx.author
-    help_embed = discord.Embed(title='Help', colour=0xde4035)
+async def helpfunc(ctx):
 
-    help_description = {'init': 'The server owner should use this command to initialize the bot with the Owner, Mod and'
-                                ' Co Mod roles\n'
-                                'Syntax : .init [Owner role name in quotes] [Mod role name in quotes] [Co Mod role name'
-                                ' in quotes]',
+    help_embed = discord.Embed(title='Cerberus Command List', colour=0xde4035)
 
-                        'info': 'Use this command to get info about all the Moderation roles in the Guild\n'
-                                'Syntax : .info',
+    moderation =   {'init':         'Initialize the bot in the server\n'
+                                    'Syntax : `.init [Owner role] [Mod role name] [Co-Mod role name] [Text Channel for nicknames]`',
 
-                        'owner': 'The server owner can use this command to re specify the Owner role\n'
-                                 'Syntax : .owner [Owner role in quotes]',
+                    'info':         'Get Server Info\n'
+                                    'Syntax : `.info`',
 
-                        'mod': 'The server owner can use this command to re specify the Moderator role\n'
-                               'Syntax : .mod [Moderator role in quotes]',
+                    'owner':        'Change Owner role\n'
+                                    'Syntax : `.owner [Owner role]`',
 
-                        'comod': 'The server owner can use this command to re specify the Co Moderator role\n'
-                                 'Syntax : .comod [Co Moderator role in quotes]',
+                    'mod':          'Change Mod role\n'
+                                    'Syntax : `.mod [Mod role]`',
 
-                        'kick': 'This command kicks the mentioned user from the server\n'
-                                'Syntax: .kick [Mention the user to be kicked here]',
+                    'comod':        'Change Co-Mod role\n'
+                                    'Syntax : `.comod [Co-Mod role]`',
 
-                        'ban': 'This command bans the mentioned user from the server\n'
-                               'Syntax: .ban [Mention the user to be banned here]',
+                    'kick':         'Kick member from guild\n'
+                                    'Syntax : `.kick [User] [Reason]`',
 
-                        'unban': 'This command unbans the specified user from the server\n'
-                                 'Syntax: .unban [Username of member] [Discord Discriminator of member]',
+                    'ban':          'Ban member from guild\n'
+                                    'Syntax : `.ban [User] [Reason]`',
 
-                        'cr': 'Use this command to create a role in the guild\n'
-                              'Syntax : .cr [Name of role to be created]',
+                    'unban':        'Unban user from guild\n'
+                                    'Syntax : `.unban [Username] [Discord Discriminator]`',
 
-                        'dr': 'Use this command to delete a role in the guild\n'
-                              'Syntax : .dr [Name of the role to be deleted]',
+                    'mute':         'Mute member\n'
+                                    'Syntax : `.mute [User] [Reason]`',
 
-                        'react': 'Use this command to give roles to users if they react with the green check mark\n'
-                                 'Syntax : .react [Name of the role to be given]',
+                    'unmute':       'Unmute member\n'
+                                    'Syntax : `.unmute [User]`',
 
-                        'poll': 'Use this command to create a poll\n'
-                                'Syntax : .poll [Question in quotes][All the options for the poll in quotes and '
-                                'separated by " "]',
+                    'tempmute':     'Mute member for specified time\n'
+                                    'Syntax : `.mute [User] [Duration(seconds)] [Reason]`',
 
-                        'help': 'Displays this message\n'
-                                'Syntax : .help'}
+                    'createrole':   'Create role\n'
+                                    'Syntax : `.cr [Role]`',
 
-    if function == 'All':
-        for item in help_description.keys():
-            help_embed.add_field(name=item, value=help_description[item], inline=False)
-        dm_channel = await author.create_dm()
-        await dm_channel.send(embed=help_embed)
-        await channel.send(f'Hey {author.mention}, I\'ve PMd you a list of my commands!')
-    else:
-        help_embed.add_field(name=function, value=help_description[function], inline=False)
-        await channel.send(embed=help_embed)
+                    'deleterole':   'Delete role\n'
+                                    'Syntax : `.dr [Role]`',
+
+                    'react':        'Create reaction role\n'
+                                    'Syntax : `.react [Role]`',
+                                    
+                    'clear':        'Clear messages\n'
+                                    'Syntax : `.clear [No. of msgs]`'}
+
+    fun =  {'nick':     'Change nickname in guild\n'
+                        'Syntax : `.nick [Nickname]`',
+                        
+            'poll':     'Create Poll\n'
+                        'Syntax : `.poll [Question in quotes] [Options in quotes separated by spaces]`',
+                        
+            'movie':    'Show information about a Movie\n'
+                        'Syntax : `.movie [Movie name]`'}
+
+    help_embed = {'⚙️ **Moderation**': '`.help moderation`', '\u200b': '\u200b', '😁 **Fun**': '`.help fun`'}
+
+    def make_embed(info):
+        new_embed = discord.Embed(title='Cerberus Command List', colour=0xde4035, description=info[1])
+        avatar = str(bot.user.avatar_url)
+        new_embed.set_thumbnail(url=avatar)
+        for pair in list(info[0].items()):
+            new_embed.add_field(name=pair[0], value=pair[1], inline=info[3])
+        return new_embed
+
+
+    reference = {'⚙️': [moderation, 'Moderation', ['⬅️'], False], '😁': [fun, 'Fun', ['⬅️'], False], '⬅️': [help_embed, 'Home Page', ['⚙️', '😁'], True]}
+
+    sent_embed = await ctx.send(embed=make_embed(reference['⬅️']))
+    for category in list(reference.keys()):
+        if category != '⬅️':
+            await sent_embed.add_reaction(category)
+    
+    async def check_reactions(ctx):
+        while True:
+            reaction, user = await bot.wait_for('reaction_add')
+            if reaction.message.id == sent_embed.id and not user.bot:
+                await sent_embed.clear_reactions()
+                await sent_embed.edit(embed=make_embed(reference[str(reaction.emoji)]))
+                for reactions in reference[str(reaction.emoji)][2]:
+                    await sent_embed.add_reaction(reactions)
+
+    bot.loop.create_task(check_reactions(ctx))
+
+
 
 
 # Error Handling section
