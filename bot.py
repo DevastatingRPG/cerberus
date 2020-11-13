@@ -1,10 +1,6 @@
 # bot.py
 import discord, os, json
 from discord.ext import commands
-from tmdbv3api import TMDb
-from tmdbv3api import Movie
-from youtubesearchpython import SearchVideos
-
 
 TOKEN='NzYzNjk3ODI5NjU4NDkyOTM5.X37fBw.lKqVTEJ9skgOJslDUqi0hC0Z2y8'
 
