@@ -278,13 +278,13 @@ class Moderation(commands.Cog):
         await request_msg.add_reaction('✅')
         await request_msg.add_reaction('❌')
 
-        def reaction_update(reaction, user):
-            return not user.bot
-
         try:
 
-            reaction, user = await self.bot.wait_for('reaction_add', timeout=86400, check=reaction_update)
+            def bot_check(reaction, user):
+                return not user.bot and reaction.message is request_msg and (str(reaction.emoji) == '✅' or str(reaction.emoji) == '❌')
 
+            reaction, user = await self.bot.wait_for('reaction_add', timeout=86400, check=bot_check)
+            
             if str(reaction.emoji) == '✅':
                 await ctx.author.edit(nick=nickname)
                 await request_msg.delete()

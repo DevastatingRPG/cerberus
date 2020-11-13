@@ -49,63 +49,6 @@ async def poll(ctx, question: str, options='Yes No'):
     for option in new_options:
         await sent_embed.add_reaction(reactions[new_options.index(option)])
 
-
-# Function to display information about a Movie
-@bot.command(name='movie')
-async def movie(ctx, *, title):
-    guild = ctx.guild
-    movies = Movie()
-    search = movies.search(title)
-    if len(search) >= 5:
-        search = search[0:5]    
-    results = []
-    searching = await ctx.send('Searching....')
-    await asyncio.sleep(3)
-    await searching.delete()
-    info_msg = await ctx.send(f'{len(search)} results found, React with 👍 on the result you would like to choose.')
-    for index in range(len(search)):
-        results.append(await ctx.send(search[index]))
-        await results[index].add_reaction('👍')
-
-    @bot.event
-    async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
-        member = guild.get_member(payload.user_id)
-        message = await ctx.fetch_message(payload.message_id)
-        if str(payload.emoji) == '👍' and not member.bot:
-
-            ind = results.index(message)
-            res_movie = search[ind]
-            movie_id = res_movie.id
-            videos = movies.videos(movie_id)
-            trailer = discord.utils.get(videos, type='Trailer')
-            reviews = movies.reviews(movie_id)
-            similar = movies.similar(movie_id)
-
-            if len(similar) >= 5:
-                similar = similar[0:5]
-            similar_content = ''
-            for mov in similar:
-                similar_content += f'{mov.title}\n'
-            if len(reviews) >= 3:
-                reviews = reviews[0:3]
-
-            movie_embed = discord.Embed(title='***The Movie Database Search Result***', colour=0xde4035)
-            movie_embed.add_field(name='**Title :**', value=res_movie.title)
-            movie_embed.add_field(name='\u200b', value='\u200b')
-            movie_embed.add_field(name='**Release Date :**', value=res_movie.release_date)
-            movie_embed.add_field(name='**Overview :**', value=res_movie.overview, inline=False)
-            movie_embed.add_field(name='**Reviews :**', value='\u200b')
-            for review in reviews:
-                if len(review.content) < 1024:
-                    movie_embed.add_field(name=f'__{review.author}__', value=review.content, inline=False)
-            movie_embed.add_field(name='**Similar Movies :**', value=similar_content, inline=False)
-            await ctx.send(embed=movie_embed)
-            await ctx.send(f'~~https://www.youtube.com/watch?v={trailer.key}~~')
-            await info_msg.delete()
-            for message in results:
-                await message.delete()
-
-
 # Custom Help
 @bot.command(name='help')
 async def helpfunc(ctx, category=None):
@@ -191,13 +134,16 @@ async def helpfunc(ctx, category=None):
         await sent_embed.add_reaction('⬅️')
     
     async def check_reactions(ctx):
+
         while True:
-            reaction, user = await bot.wait_for('reaction_add')
-            if reaction.message.id == sent_embed.id and not user.bot:
-                await sent_embed.clear_reactions()
-                await sent_embed.edit(embed=make_embed(reference[str(reaction.emoji)]))
-                for reactions in reference[str(reaction.emoji)][2]:
-                    await sent_embed.add_reaction(reactions)
+            def bot_check(reaction, user):
+                return reaction.message.id == sent_embed.id and not user.bot
+
+            reaction, user = await bot.wait_for('reaction_add', check=bot_check)           
+            await sent_embed.clear_reactions()
+            await sent_embed.edit(embed=make_embed(reference[str(reaction.emoji)]))
+            for reactions in reference[str(reaction.emoji)][2]:
+                await sent_embed.add_reaction(reactions)
 
     bot.loop.create_task(check_reactions(ctx))
 
