@@ -148,21 +148,4 @@ async def helpfunc(ctx, category=None):
     bot.loop.create_task(check_reactions(ctx))
 
 
-
-
-# Error Handling section
-# @bot.event
-# async def on_command_error(ctx, error):
-#     channel = ctx.channel
-#
-#     if isinstance(error, commands.CheckFailure):
-#         await channel.send('F in the chat, you are not powerful enough to use this lol.')
-#
-#     if isinstance(error, commands.CommandInvokeError):
-#         await channel.send('You hold no power over the Fuhrer, Child.')
-#
-#     if isinstance(error, commands.MissingPermissions) or isinstance(error, commands.MissingRole):
-#         await channel.send('Oof, you are not powerful enough to run this command.')
-#
-
 bot.run(TOKEN)  # run the bot as usual
