@@ -108,7 +108,7 @@ async def movie(ctx, *, title):
 
 # Custom Help
 @bot.command(name='help')
-async def helpfunc(ctx):
+async def helpfunc(ctx, category=None):
 
     help_embed = discord.Embed(title='Cerberus Command List', colour=0xde4035)
 
@@ -167,6 +167,9 @@ async def helpfunc(ctx):
                         'Syntax : `.movie [Movie name]`'}
 
     help_embed = {'⚙️ **Moderation**': '`.help moderation`', '\u200b': '\u200b', '😁 **Fun**': '`.help fun`'}
+    reference = {'⚙️': [moderation, 'Moderation', ['⬅️'], False], '😁': [fun, 'Fun', ['⬅️'], False], '⬅️': [help_embed, 'Home Page', ['⚙️', '😁'], True]}
+
+    categories = {'moderation': reference['⚙️'], 'fun': reference['😁']}
 
     def make_embed(info):
         new_embed = discord.Embed(title='Cerberus Command List', colour=0xde4035, description=info[1])
@@ -176,13 +179,16 @@ async def helpfunc(ctx):
             new_embed.add_field(name=pair[0], value=pair[1], inline=info[3])
         return new_embed
 
-
-    reference = {'⚙️': [moderation, 'Moderation', ['⬅️'], False], '😁': [fun, 'Fun', ['⬅️'], False], '⬅️': [help_embed, 'Home Page', ['⚙️', '😁'], True]}
-
-    sent_embed = await ctx.send(embed=make_embed(reference['⬅️']))
-    for category in list(reference.keys()):
-        if category != '⬅️':
-            await sent_embed.add_reaction(category)
+    
+    if category is None:
+        sent_embed = await ctx.send(embed=make_embed(reference['⬅️']))
+        for category in list(reference.keys()):
+            if category != '⬅️':
+                await sent_embed.add_reaction(category)
+    
+    else:
+        sent_embed = await ctx.send(embed=make_embed(categories[category]))
+        await sent_embed.add_reaction('⬅️')
     
     async def check_reactions(ctx):
         while True:
