@@ -54,7 +54,7 @@ class CommandErrorHandler(commands.Cog):
             await ctx.send(inp)
 
         @do_repeat.error
-        async def do_repeat_handler(self, ctx, error):
+        async def do_repeat_handler(self, ctx, error):  # pylint: disable=unused-variable
 
             if isinstance(error, commands.MissingRequiredArgument):
                 if error.param.name == 'inp':
