@@ -267,37 +267,6 @@ class Moderation(commands.Cog):
                 required_role = server_info[str(guild.id)]['reaction_roles'][str(payload.message_id)]
                 await member.remove_roles(discord.utils.get(guild.roles, name = required_role))
 
-    # Function to apply Nickname Change
-    @commands.command(name='nick')
-    async def nick(self, ctx, *, nickname):
-
-        channel = ctx.guild.get_channel(server_info[str(ctx.guild.id)]['nick'])
-        await ctx.message.delete()
-        await ctx.send('Nickname change request submitted!')
-        request_msg = await channel.send(f'{ctx.author} wants to change their nickname to {nickname}. React with ✅ to accept and ❌ to reject')
-        await request_msg.add_reaction('✅')
-        await request_msg.add_reaction('❌')
-
-        try:
-
-            def bot_check(reaction, user):
-                return not user.bot and reaction.message is request_msg and (str(reaction.emoji) == '✅' or str(reaction.emoji) == '❌')
-
-            reaction, user = await self.bot.wait_for('reaction_add', timeout=86400, check=bot_check)
-            
-            if str(reaction.emoji) == '✅':
-                await ctx.author.edit(nick=nickname)
-                await request_msg.delete()
-                await channel.send('Nickname Change request accepted')
-                await ctx.send(f'Hey {ctx.author.mention}, Your nickname change request has been accepted')
-
-            if str(reaction.emoji) == '❌':
-                await request_msg.delete()
-                await channel.send('Nickname Change request rejected')
-                await ctx.send(f'Hey {ctx.author.mention}, Your nickname change request has been rejected')
-
-        except asyncio.TimeoutError:
-            ctx.send(f'Hey {ctx.author.mention}, it seems your nickname change request has been ignored')
 
     # Function to Create Role
     @commands.command(aliases=['cr', 'createrole'])
