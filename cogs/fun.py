@@ -122,10 +122,10 @@ class Fun(commands.Cog):
             with open(f'emojis/emoji.{extension}', 'rb') as emoji:
                 emoji = emoji.read()
                 await ctx.guild.create_custom_emoji(name=name, image=emoji)
-                ctx.send(f'Emoji succesfully created :{name}:')
+                await ctx.send(f'Emoji succesfully created :{name}:')
                 
         else:
-            ctx.send('There was an error retrieving your image')
+            await ctx.send('There was an error retrieving your image')
 
     @emoji.error
     async def emoji_error(self, ctx, error):

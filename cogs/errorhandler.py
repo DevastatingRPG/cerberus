@@ -39,9 +39,6 @@ class CommandErrorHandler(commands.Cog):
         elif isinstance(error, commands.CheckFailure):
             await ctx.send('F in the chat, you failed the vibe check to use this lol.')
 
-        elif isinstance(error, commands.CommandInvokeError):
-            await ctx.send('You hold no power over the Fuhrer, Child.')
-
         elif isinstance(error, commands.MissingPermissions) or isinstance(error, commands.MissingRole):
             await ctx.send('Oof, you are not powerful enough to run this command.')
         
