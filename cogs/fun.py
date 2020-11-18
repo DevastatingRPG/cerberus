@@ -127,6 +127,20 @@ class Fun(commands.Cog):
         else:
             await ctx.send('There was an error retrieving your image')
 
+    @commands.Cog.listener()
+    async def on_message_delete(self, ctx):
+        server_info[str(ctx.guild.id)]['deleted'] = {'user': str(ctx.author.id), 'text': ctx.content}
+        with open('info.json', 'w') as info_file_input:
+            json.dump(server_info, info_file_input, indent=2)
+
+    @commands.command(name='snipe')
+    async def snipe(self, ctx):
+        author, text = ctx.guild.get_member(int(server_info[str(ctx.guild.id)]['deleted']['user'])), server_info[str(ctx.guild.id)]['deleted']['text']
+        snipe_embed = discord.Embed(title='Deleted Message', colour=0xde4035)
+        snipe_embed.set_author(name=author.name, icon_url=author.avatar_url)
+        snipe_embed.add_field(name='Text :', value=text)
+        await ctx.send(embed=snipe_embed)
+
     @emoji.error
     async def emoji_error(self, ctx, error):
         if isinstance(error, commands.CommandInvokeError):

@@ -28,7 +28,8 @@ class Moderation(commands.Cog):
 
         roles = {member.name: [role.id for role in member.roles] for member in guild.members}
 
-        server_info[str(guild.id)] = {'owner': owner.id, 'mod': mod.id, 'co_mod': co_mod.id, 'roles': roles, 'reaction_roles': {}, 'nick': nick.id}
+        server_info[str(guild.id)] = {'owner': owner.id, 'mod': mod.id, 'co_mod': co_mod.id, 'roles': roles, 'reaction_roles': {}, 'nick': nick.id,
+        'deleted': {}}
 
         with open('info.json', 'w') as info_file_input:
             json.dump(server_info, info_file_input, indent=2)
