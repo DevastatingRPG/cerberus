@@ -129,7 +129,6 @@ class Fun(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message_delete(self, ctx):
-        print(type(server_info))
         server_info[str(ctx.guild.id)]['deleted'] = {'user': str(ctx.author.id), 'text': ctx.content}
         with open('info.json', 'w') as info_file_input:
             json.dump(server_info, info_file_input, indent=2)
