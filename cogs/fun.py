@@ -135,6 +135,7 @@ class Fun(commands.Cog):
 
     @commands.command(name='snipe')
     async def snipe(self, ctx):
+        
         author, text = ctx.guild.get_member(int(server_info[str(ctx.guild.id)]['deleted']['user'])), server_info[str(ctx.guild.id)]['deleted']['text']
         snipe_embed = discord.Embed(title='Deleted Message', colour=0xde4035)
         snipe_embed.set_author(name=author.name, icon_url=author.avatar_url)
