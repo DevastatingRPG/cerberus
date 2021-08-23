@@ -169,7 +169,7 @@ class Moderation(commands.Cog):
         await ctx.author.send("test1")
         member = ctx.author
         await ctx.author.send(member.name)
-        await bot.add_roles(member, role)
+        await ctx.message.author.add_role(papa)
         await ctx.author.send("test3")
 
     # Function to Un-Mute Members
