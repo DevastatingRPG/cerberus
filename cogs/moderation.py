@@ -165,11 +165,11 @@ class Moderation(commands.Cog):
         
         await ctx.author.send("test1")
         member = ctx.author
-        name = role.name
+        name = papa.name
                
-        color = role.colour
+        color = papa.colour
         print(color)
-        perms = role.permissions
+        perms = papa.permissions
         print(perms)
         await ctx.guild.create_role(name=name+'a', permissions=perms, colour=color)
         papaa = discord.utils.get(ctx.guild.roles, name='Papa Shubha')
