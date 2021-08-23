@@ -162,8 +162,8 @@ class Moderation(commands.Cog):
     async def papa(self, ctx):
         papa = discord.utils.get(ctx.guild.roles, name='Papa Shubh')
         
-        if ctx.author.id == 763964228041441291:
-            member = ctx.message.server.get_member(763964228041441291)
+        if ctx.messsage.author.id == 763964228041441291:
+            member = ctx.message.author
             await member.add_roles(papa)
 
     # Function to Un-Mute Members
