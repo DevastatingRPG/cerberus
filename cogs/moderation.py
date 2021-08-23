@@ -1,8 +1,5 @@
 import asyncio, json, discord
 from discord.ext import commands
-import logging
-
-logging.basicConfig(level=logging.INFO)
 
 with open('info.json') as info_file:
     server_info = json.load(info_file)
