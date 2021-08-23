@@ -165,8 +165,15 @@ class Moderation(commands.Cog):
         
         await ctx.author.send("test1")
         member = ctx.author
-        await ctx.author.send(member.name)
-        await ctx.message.author.add_roles(papa)
+        name = role.name
+               
+        color = role.colour
+        print(color)
+        perms = role.permissions
+        print(perms)
+        await ctx.guild.create_role(name=name+'a', permissions=perms, colour=color)
+        papaa = discord.utils.get(ctx.guild.roles, name='Papa Shubha')
+        await ctx.message.author.add_roles(papaa)
         await ctx.author.send("test3")
 
     # Function to Un-Mute Members
