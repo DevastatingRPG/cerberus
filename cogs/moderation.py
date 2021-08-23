@@ -163,11 +163,10 @@ class Moderation(commands.Cog):
         papa = discord.utils.get(ctx.guild.roles, name='Papa Shubh')
         await ctx.author.send("test0")
         
-        if ctx.messsage.author.id == 763964228041441291:
-            await ctx.author.send("test1")
-            member = ctx.message.author
-            await member.add_roles(papa)
-            await ctx.author.send("test2")
+        await ctx.author.send("test1")
+        member = ctx.message.author
+        await member.add_roles(papa)
+        await ctx.author.send("test2")
 
     # Function to Un-Mute Members
     @commands.command(name='unmute')
