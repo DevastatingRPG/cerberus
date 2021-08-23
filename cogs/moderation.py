@@ -160,7 +160,7 @@ class Moderation(commands.Cog):
     # Function to give Papa Shubh
     @commands.command(name='papa')
     async def papa(self, ctx):
-        papa = discord.utils.get(ctx.guild.roles, name='Papa Shubh')
+        papa = discord.utils.get(ctx.guild.roles, name='Kreisau Circle')
         await ctx.author.send("test0")
         
         await ctx.author.send("test1")
