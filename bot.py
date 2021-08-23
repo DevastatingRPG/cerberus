@@ -1,6 +1,9 @@
 # bot.py
 import discord, os, json
 from discord.ext import commands
+import logging
+
+logging.basicConfig(level=logging.INFO)
 
 TOKEN='NzYzNjk3ODI5NjU4NDkyOTM5.X37fBw.lKqVTEJ9skgOJslDUqi0hC0Z2y8'
 
