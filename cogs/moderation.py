@@ -48,6 +48,13 @@ class Moderation(commands.Cog):
         await ctx.send(f'Owner role : \"{guild.get_role(server_info[str(ctx.guild.id)]["owner"])}\"')
         await ctx.send(f'Moderator role : \"{guild.get_role(server_info[str(ctx.guild.id)]["mod"])}\"')
         await ctx.send(f'Co Moderator role : \"{guild.get_role(server_info[str(ctx.guild.id)]["co_mod"])}\"')
+        
+    # Function to send invites
+    @commands.command(name='invite')
+    async def invite(self, ctx):
+        invitelink = await ctx.channel.create_invite(max_uses=1,unique=True)
+        #dming it to the person
+        await ctx.author.send(invitelink)
 
     # Function to change Owner role
     @commands.command(name='owner')
