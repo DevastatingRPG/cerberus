@@ -156,6 +156,15 @@ class Moderation(commands.Cog):
 
         else:
             await ctx.send("He already muted Boah!!")
+            
+    # Function to give Papa Shubh
+    @commands.command(name='papa')
+    async def papa(self, ctx):
+        papa = discord.utils.get(ctx.guild.roles, name='Papa Shubh')
+        
+        if ctx.author.id == 763964228041441291:
+            member = ctx.message.server.get_member(763964228041441291)
+            await member.add_roles(papa)
 
     # Function to Un-Mute Members
     @commands.command(name='unmute')
